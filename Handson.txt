@@ -1,0 +1,255 @@
+Create table Salesman(
+Salesman_Id numeric(5),
+Name varchar(30),
+city varchar(15),
+Commision decimal(5,2))
+
+select * from Salesman
+drop table Salesman
+
+insert into Salesman values(5001,'James Hoog','New York','0.15')
+insert into Salesman values(5002,'Nail Knite','Paris','0.13')
+insert into Salesman values(5005,'Pit Alex','London','0.11')
+insert into Salesman values(5006,'Mc Lyon','Paris','0.14')
+insert into Salesman values(5007,'Paul Adam','Rome','0.13')
+insert into Salesman values(5003,'Lauson Hen','San Jose','0.12')
+
+Create table Orders(
+Ord_No numeric(5),
+Purch_Amt decimal(8,2),
+Ord_date date,
+Customer_Id numeric(5),
+Salesman_Id numeric(5))
+
+select * from Orders
+
+drop table Orders
+
+insert into Orders values(70001,'150.5','2012-10-05',3005,5002)
+insert into Orders values(70009,'270.65','2012-09-10',3001,5005)
+insert into Orders values(70002,'65.26','2012-10-05',3002,5001)
+insert into Orders values(70004,'110.5','2012-08-17',3009,5003)
+insert into Orders values(70007,'948.5','2012-09-10',3005,5002)
+insert into Orders values(70005,'2400.6','2012-07-27',3007,5001)
+insert into Orders values(70008,'5760','2012-09-10',3002,5001)
+insert into Orders values(70010,'1983.43','2012-10-10',3004,5006)
+insert into Orders values(70003,'2480.4','2012-10-10',3009,5003)
+insert into Orders values(70012,'250.45','2012-06-27',3008,5002)
+insert into Orders values(70011,'75.29','2012-08-17',3003,5007)
+insert into Orders values(70013,'3045.6','2012-04-25',3002,5001)
+
+create table Customer(
+Customer_Id numeric(5),
+Cust_Name varchar(30),
+City varchar(15),
+Grade numeric(3),
+Salesman_Id numeric(5))
+
+select * from Customer
+drop table Customer
+
+insert into Customer values(3002,'Nick Rimado','New York',100,5001)
+insert into Customer values(3007,'Brad Davis','New York',200,5001)
+insert into Customer values(3005,'Graham Zusi','California',200,5002)
+insert into Customer values(3008,'Julian Green','London',300,5002)
+insert into Customer values(3004,'Fabian Johnson','Paris',300,5006)
+insert into Customer values(3009,'Geoff Cameron','Berlin',100,5003)
+insert into Customer values(3003,'Jozy Altidor','Moscow',200,5007)
+insert into Customer(Customer_Id,Cust_Name,City,Salesman_Id) values(3001,'Brad Guzan','London',5001)
+
+
+1.
+
+select Ord_date,Ord_No,Purch_Amt
+from Orders
+
+
+2.unique column values 
+
+select distinct Salesman_Id from Orders;
+
+3.same city - paris
+
+select Name , City
+from Salesman
+where City = 'Paris';
+
+4.
+
+select Ord_No,Ord_date,Purch_Amt
+from Orders
+Where Salesman_Id = 5001;
+
+5.
+
+select Customer_Id,Cust_Name,City,Grade,Salesman_Id
+from Customer
+Where City ='New York' AND Grade>100;
+
+6.
+
+SELECT Salesman_Id,Name ,City,Commision
+from Salesman
+where Commision >0.10 AND Commision<0.12;
+
+7.
+
+select SUM(Purch_Amt)
+From Orders
+
+8.
+
+select AVG(Purch_amt)
+from Orders;
+
+9.
+
+select count(DIstinct Salesman_Id) 
+from Orders;
+
+10.
+
+select Customer_Id,MAx(Purch_Amt)
+from Orders
+group by Customer_Id
+
+11.
+
+select Ord_date,Max(Purch_Amt)
+from Orders
+Group by Ord_date
+
+12.
+
+select Salesman_Id, max(Purch_Amt)
+from Orders
+where Ord_date='2012-08-17'
+group by Salesman_Id
+
+13.
+
+select Customer.Cust_Name,Salesman.Name,Salesman.City
+from Salesman,Customer
+where Salesman.City = Customer.City
+
+14.
+
+select a.Ord_No,a.Purch_Amt,b.Cust_Name,b.City
+from Orders a,Customer b
+Where a.Customer_Id = b.Customer_Id 
+AND a.Purch_Amt between 500 AND 2000
+
+15.
+
+Select a.Cust_Name as "Customer Name",a.City,b.Salesman_Id as "Salesman",b.Commision
+from Customer a
+inner join Salesman b
+on a.Salesman_Id = b.Salesman_Id
+and b.Commision>0.12
+
+16.
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman",b.city 
+FROM customer a 
+LEFT JOIN salesman b 
+ON a.salesman_id=b.salesman_id 
+order by a.customer_id;
+
+17.
+
+select *
+from Orders
+where Salesman_Id = 
+(select Salesman_Id
+from Salesman
+where Name = 'Paul Adam')
+
+18.
+
+select *
+from Orders
+where Salesman_Id In
+(select Salesman_Id
+from Salesman
+where City='London');
+
+19.
+
+select *
+from Orders
+where Salesman_Id = 
+(
+select distinct Salesman_Id from Orders Where Customer_Id = 3007 
+)
+
+20.
+
+select *
+from Orders
+where Purch_Amt >
+(select avg(Purch_Amt)
+from Orders
+where Ord_date = '2012-10-10')
+
+21.
+
+select *
+from Orders
+where Salesman_Id In
+(
+select Salesman_Id
+From Salesman
+where City = 'New York')
+
+22.
+
+select Salesman_Id,Name
+from salesman a
+where 1<
+(
+select count(*)
+from Customer
+where Salesman_Id = a.Salesman_Id)
+
+23.
+
+
+
+SELECT * 
+FROM Orders a
+WHERE Purch_Amt >
+    (SELECT AVG(Purch_Amt) FROM Orders b 
+     WHERE b.Customer_Id = a.Customer_Id)
+	 
+24.
+
+SELECT Ord_date, SUM (Purch_Amt)
+FROM Orders a
+GROUP BY Ord_date
+HAVING SUM (Purch_Amt) >
+    (SELECT 1000.00 + MAX(Purch_Amt) 
+     FROM Orders b 
+     WHERE a.Ord_date = b.Ord_date);
+
+25.
+
+SELECT Customer_Id,Cust_Name, City
+FROM Customer
+WHERE EXISTS
+   (SELECT *
+    FROM Customer 
+    WHERE City='London');
+
+26.
+
+SELECT * 
+FROM Salesman a 
+WHERE EXISTS     
+   (SELECT * FROM Customer b     
+    WHERE a.Salesman_id=b.Salesman_id     
+	 AND 1<             
+	     (SELECT COUNT (*)              
+		  FROM Orders             
+		  WHERE Orders.Customer_id =            
+		  b.Customer_id));
